@@ -1,0 +1,174 @@
+:root {
+  --bg: #050507;
+  --fg: #d9d6cf;
+  --muted: #6d6a66;
+  --glow: 255, 236, 200;   /* warm white, as r,g,b for rgba() */
+  --focus: 0;              /* updated from JS every frame, 0..1 */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  overflow: hidden;
+  cursor: default;
+}
+
+/* ---------- Focal point ---------- */
+#stage {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+#focal {
+  position: relative;
+  width: 14px;
+  height: 14px;
+}
+
+#dot {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(var(--glow), calc(0.25 + 0.75 * var(--focus)));
+  box-shadow:
+    0 0 calc(6px + 30px * var(--focus)) rgba(var(--glow), calc(0.2 + 0.6 * var(--focus))),
+    0 0 calc(20px + 90px * var(--focus)) rgba(var(--glow), calc(0.1 * var(--focus)));
+}
+
+/* Slow breathing ring that widens with focus */
+#halo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(40px + 220px * var(--focus));
+  height: calc(40px + 220px * var(--focus));
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid rgba(var(--glow), calc(0.05 + 0.25 * var(--focus)));
+  animation: breathe 8s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.35; scale: 0.92; }
+  50%      { opacity: 1;    scale: 1.05; }
+}
+
+/* When distracted, the dot jitters. The class is toggled from JS. */
+body.distracted #focal { animation: jitter 0.09s steps(2) infinite; }
+@keyframes jitter {
+  0%   { translate: 0 0; }
+  50%  { translate: 2px -1px; }
+  100% { translate: -1px 2px; }
+}
+
+#status {
+  position: fixed;
+  bottom: 12vh;
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---------- Intro ---------- */
+#intro {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 24px;
+  text-align: center;
+  background: var(--bg);
+  transition: opacity 1.2s ease;
+  z-index: 10;
+}
+#intro.gone { opacity: 0; pointer-events: none; }
+
+h1 {
+  margin: 0;
+  font-weight: 200;
+  font-size: clamp(26px, 5vw, 44px);
+  letter-spacing: 0.12em;
+}
+
+.lede { margin: 0; color: #a7a39c; line-height: 1.6; font-weight: 300; }
+.fine { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.6; }
+
+#start {
+  margin-top: 12px;
+  padding: 14px 34px;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--fg);
+  background: transparent;
+  border: 1px solid rgba(var(--glow), 0.35);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+#start:hover, #start:focus-visible {
+  outline: none;
+  border-color: rgba(var(--glow), 0.9);
+  box-shadow: 0 0 24px rgba(var(--glow), 0.25);
+}
+#start:disabled { opacity: 0.4; cursor: wait; }
+
+#error { margin: 0; color: #e0786b; font-size: 13px; min-height: 1em; }
+
+/* ---------- Calibration ---------- */
+#calibrate {
+  position: fixed;
+  top: 18vh;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  color: #a7a39c;
+  z-index: 5;
+}
+
+/* ---------- Camera + debug ---------- */
+#cam {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  width: 180px;
+  transform: scaleX(-1);        /* mirror so it feels natural */
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+}
+body.debug #cam { opacity: 0.55; }
+
+#debug {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  max-width: calc(100vw - 32px);
+  padding: 10px 12px;
+  background: rgba(20, 20, 24, 0.85);
+  border: 1px solid #222;
+  border-radius: 6px;
+  font: 11px/1.5 ui-monospace, Menlo, Consolas, monospace;
+  color: #bdb9b1;
+  z-index: 20;
+}
+#debug pre { margin: 0; white-space: pre; }
+#debug .keys { margin: 6px 0 0; color: var(--muted); }

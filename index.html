@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Symphony of the Stare</title>
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Tone.js: synthesis, effects and scheduling -->
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.8.49/build/Tone.js"></script>
+  <!-- MediaPipe Face Mesh (legacy "solutions" API). refineLandmarks gives the 10 iris points. -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/face_mesh.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <!-- The focal point. Its glow follows focusLevel. -->
+  <main id="stage" aria-live="polite">
+    <div id="focal">
+      <div id="halo"></div>
+      <div id="dot"></div>
+    </div>
+    <p id="status">&nbsp;</p>
+  </main>
+
+  <!-- Start screen. A user gesture is required to unlock both the camera and the AudioContext. -->
+  <section id="intro">
+    <h1>Symphony of the Stare</h1>
+    <p class="lede">The music plays only while you give it your full attention.<br />
+      Look away, and it falls apart.</p>
+    <button id="start" type="button">Start Experience</button>
+    <p class="fine">Uses your webcam locally. Nothing is recorded or uploaded.<br />
+      Headphones recommended. Keep the volume moderate: the noise is harsh by design.</p>
+    <p id="error" role="alert"></p>
+  </section>
+
+  <!-- Calibration prompt, shown for a few seconds after start. -->
+  <div id="calibrate" hidden>Stare at the dot. Calibrating…</div>
+
+  <!-- Hidden camera feed. Shown as a small preview when the debug panel is on. -->
+  <video id="cam" playsinline muted></video>
+
+  <!-- Tuning panel. Toggle with "D". Recalibrate with "C". -->
+  <aside id="debug" hidden>
+    <pre id="debugText"></pre>
+    <p class="keys">D: toggle panel · C: recalibrate</p>
+  </aside>
+
+  <script src="main.js"></script>
+</body>
+</html>
